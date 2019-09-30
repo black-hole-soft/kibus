@@ -1,0 +1,66 @@
+internal String emergente(String sts)
+        {
+            Point pA;
+            Point[] vac = new Point[8], obs = new Point[8], est = new Point[8];
+            int nVac = 0, nObs = 0, nEst = 0, i, j;
+            String mov = "trabado";
+            for (i = 0; i < 3; i++)
+            {
+                for (j = 0; j < 3; j++)
+                {
+                    pA = p;
+                    pA.X += (i - 1) * vel;
+                    pA.Y += (j - 1) * vel;
+                    if (pA != p && pA != memoria)
+                    {
+                        mov = verificaCelda(pA);
+                        if (mov == "")
+                            vac[nVac++] = pA;
+                        if (mov == "obstacle")
+                            obs[nObs++] = pA;
+                        if (mov == "eflag")
+                            est[nEst++] = pA;
+                    }
+                }
+            }
+            if (nObs < 8)
+            {
+                pA = p;
+                if (nVac > 0)
+                    pA = vac[ran.Next(nVac)];
+                else
+                {
+                    if (nEst > 0)
+                        pA = est[ran.Next(nEst)];
+                }
+                if (pA == p)
+                {
+                    p = memoria;
+                    mov = moverKibus();
+                    grid[(memoria.X - 205) / 50, (memoria.Y - 15) / 50].posBandera("y");
+                    memoria = p;
+                    ToFront();
+                }
+                else
+                {
+                    p = pA;
+                    mov = moverKibus();
+                    if (mov == "")
+                    {
+                        grid[(memoria.X - 205) / 50, (memoria.Y - 15) / 50].posBandera("e");
+                        ToFront();
+                    }
+                    else
+                    {
+                        if (mov == "eflag")
+                        {
+                            grid[(memoria.X - 205) / 50, (memoria.Y - 15) / 50].posBandera("e");
+                            ToFront();
+                            //MessageBox.Show("Emeg:" + mov + ":" + (p.X / 50).ToString() + "," + (p.Y / 50).ToString());
+                            return emergente(mov);
+                        }
+                    }
+                }
+            }
+            return mov;
+        }
